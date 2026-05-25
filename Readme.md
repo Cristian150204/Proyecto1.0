@@ -4,8 +4,10 @@ Vamos a generar un codigo para zonificar y calcular los desplazamientos de varia
 
 ## Autores
 Cristian Aranguren
+
 Juve Marin
 
 ## Ramas
 dev_caranguren59
+
 dev_jmarin54
