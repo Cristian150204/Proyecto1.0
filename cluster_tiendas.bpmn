@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Definitions_ClusterTiendas" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.47.0">
+  <bpmn:process id="ProcessClusterTiendas" name="Clusterización de Tiendas" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_Excel" name="Inicio: Excel como base de datos de las Tiendas" />
+    <bpmn:serviceTask id="Task_CargaPandas" name="Carga de datos a python mediante Pandas" />
+    <bpmn:sequenceFlow id="Flow1" sourceRef="StartEvent_Excel" targetRef="Task_CargaPandas" />
+    <bpmn:scriptTask id="Task_Haversine" name="Cálculo de distancias (Haversine)" />
+    <bpmn:sequenceFlow id="Flow2" sourceRef="Task_CargaPandas" targetRef="Task_Haversine" />
+    <bpmn:subProcess id="SubProcess_Cluster" name="Clusterización Radio 1 km (tarea de volumen, de agrupar y asignarlas a  un grupo)">
+      <bpmn:task id="Task_Densidad" name="Seleccionar tienda con alto volumen de otras tiendas alrededor" />
+      <bpmn:task id="Task_Agrupar" name="Agrupar tiendas dentro de 1 km" />
+      <bpmn:task id="Task_AsignarGrupo" name="Asignar ID de grupo" />
+      <bpmn:sequenceFlow id="Flow3" sourceRef="Task_Densidad" targetRef="Task_Agrupar" />
+      <bpmn:sequenceFlow id="Flow4" sourceRef="Task_Agrupar" targetRef="Task_AsignarGrupo" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow5" sourceRef="Task_Haversine" targetRef="SubProcess_Cluster" />
+    <bpmn:serviceTask id="Task_ExportarExcel" name="Exportar resultados a Excel" />
+    <bpmn:sequenceFlow id="Flow6" sourceRef="SubProcess_Cluster" targetRef="Task_ExportarExcel" />
+    <bpmn:userTask id="Task_Dashboard" name="Visualización Geo-Espacial mediante un dashboard" />
+    <bpmn:sequenceFlow id="Flow7" sourceRef="Task_ExportarExcel" targetRef="Task_Dashboard" />
+    <bpmn:endEvent id="EndEvent_Fin" name="Fin del Proceso" />
+    <bpmn:sequenceFlow id="Flow8" sourceRef="Task_Dashboard" targetRef="EndEvent_Fin" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Cluster">
+    <bpmndi:BPMNPlane id="BPMNPlane_Cluster" bpmnElement="ProcessClusterTiendas">
+      <bpmndi:BPMNShape id="Task_CargaPandas_di" bpmnElement="Task_CargaPandas" bioc:stroke="#3886ca" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#1a568a">
+        <dc:Bounds x="270" y="80" width="120" height="100" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Haversine_di" bpmnElement="Task_Haversine" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="430" y="80" width="120" height="100" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ExportarExcel_di" bpmnElement="Task_ExportarExcel" bioc:stroke="#3886ca" bioc:fill="#bbdefb" color:background-color="#bbdefb" color:border-color="#1a568a">
+        <dc:Bounds x="840" y="90" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Dashboard_di" bpmnElement="Task_Dashboard" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+        <dc:Bounds x="1020" y="90" width="160" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Fin_di" bpmnElement="EndEvent_Fin" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="1230" y="110" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1211" y="161" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_Excel_di" bpmnElement="StartEvent_Excel" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
+        <dc:Bounds x="180" y="110" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="165" y="163" width="70" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="SubProcess_Cluster_di" bpmnElement="SubProcess_Cluster" isExpanded="true" bioc:stroke="#5b176d" bioc:fill="#e1bee7" color:background-color="#e1bee7" color:border-color="#5b176d">
+        <dc:Bounds x="590" y="90" width="200" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow1_di" bpmnElement="Flow1">
+        <di:waypoint x="220" y="130" />
+        <di:waypoint x="270" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow2_di" bpmnElement="Flow2">
+        <di:waypoint x="390" y="130" />
+        <di:waypoint x="430" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow5_di" bpmnElement="Flow5">
+        <di:waypoint x="550" y="130" />
+        <di:waypoint x="590" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow6_di" bpmnElement="Flow6">
+        <di:waypoint x="790" y="130" />
+        <di:waypoint x="840" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow7_di" bpmnElement="Flow7">
+        <di:waypoint x="980" y="130" />
+        <di:waypoint x="1020" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow8_di" bpmnElement="Flow8">
+        <di:waypoint x="1180" y="130" />
+        <di:waypoint x="1230" y="130" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
